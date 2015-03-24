@@ -1,8 +1,8 @@
 class ReviewsController < ApplicationController
-  before_action :set_review, only: [:edit, :update, :destroy]
+  
   before_action :set_restaurant
   before_action :authenticate_user!
-  before_action :check_user, only: [:edit, :update, :destroy]
+  before_action :set_review, only: [:edit, :update, :destroy]
   # GET /reviews
   # GET /reviews.json
   
@@ -28,7 +28,7 @@ class ReviewsController < ApplicationController
 
     respond_to do |format|
       if @review.save
-        format.html { redirect_to root_path, notice: 'Review was successfully created.' }
+        format.html { redirect_to @restaurant, notice: 'Review was successfully created.' }
         format.json { render :show, status: :created, location: @review }
       else
         format.html { render :new }
@@ -42,7 +42,7 @@ class ReviewsController < ApplicationController
   def update
     respond_to do |format|
       if @review.update(review_params)
-        format.html { redirect_to @review, notice: 'Review was successfully updated.' }
+        format.html { redirect_to restaurant_path(@restaurant), notice: 'Review was successfully updated.' }
         format.json { render :show, status: :ok, location: @review }
       else
         format.html { render :edit }
@@ -62,6 +62,10 @@ class ReviewsController < ApplicationController
   end
 
   private
+
+    def set_restaurant
+    @restaurant = Restaurant.find(params[:restaurant_id])
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_review
       @review = Review.find(params[:id])
@@ -72,7 +76,4 @@ class ReviewsController < ApplicationController
       params.require(:review).permit(:rating, :comment)
     end
 
-    def set_restaurant
-      @restaurant = Restaurant.find(params[:restaurant_id])
-    end
 end
